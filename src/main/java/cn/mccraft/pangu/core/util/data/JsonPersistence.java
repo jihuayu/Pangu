@@ -2,6 +2,7 @@ package cn.mccraft.pangu.core.util.data;
 
 import cn.mccraft.pangu.core.loader.AutoWired;
 import cn.mccraft.pangu.core.loader.Load;
+import cn.mccraft.pangu.core.util.image.RemoteImage;
 import com.google.gson.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +34,11 @@ public enum JsonPersistence implements Persistence {
         assert parameterNames.length == objects.length && objects.length == types.length : "Argument's length must be the same";
 
         JsonObject jsonObject = new JsonObject();
+
+        if (persistenceByParameterOrder) {
+            jsonObject.add("__persistence_by_parameter_order__", new JsonPrimitive(true));
+        }
+
         for (int i = 0; i < objects.length; i++) {
             Object object = objects[i]; if (object == null) continue;
             String name = persistenceByParameterOrder? "arg" + i : parameterNames[i];
@@ -57,10 +63,10 @@ public enum JsonPersistence implements Persistence {
             JsonElement element;
 
             if (byOrder) {
+                element = jsonObject.get("arg" + i);
+            } else {
                 String name = parameterNames[i];
                 element = jsonObject.get(name);
-            } else {
-                element = jsonObject.get("arg" + i);
             }
 
             if (element != null && !element.isJsonNull()) {
