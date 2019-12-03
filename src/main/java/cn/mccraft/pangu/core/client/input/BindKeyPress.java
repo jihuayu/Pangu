@@ -15,10 +15,7 @@ public @interface BindKeyPress {
     /**
      * @return the code of the key to bind from {@link org.lwjgl.input.Keyboard}
      */
-    int value() default -1;
-
-    @Deprecated
-    int keyCode() default -1;
+    int value();
 
     /**
      * If this meta is empty, injector will use method name
@@ -46,4 +43,9 @@ public @interface BindKeyPress {
      * @return whether responding in GUI
      */
     boolean enableInGUI() default false;
+
+    /**
+     * @return true that only active in development env
+     */
+    boolean devOnly() default false;
 }

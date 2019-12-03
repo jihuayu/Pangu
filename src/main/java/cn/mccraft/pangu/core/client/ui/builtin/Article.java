@@ -19,13 +19,8 @@ public class Article extends Scrolling {
     }
 
     @Override
-    public int getContentHeight() {
+    public float getContentHeight() {
         return lines.size() * 12;
-    }
-
-    @Override
-    public void onContentClick(float mouseListX, float mouseListY) {
-
     }
 
     public Article addLine(Line... lines) {
@@ -34,7 +29,7 @@ public class Article extends Scrolling {
     }
 
     @Override
-    public void onContentDraw(float baseY) {
+    public void onContentDraw(float ticks, float baseY, float mouseListX, float mouseListY) {
         for (int i = 0; i < lines.size(); i++) {
             Line line = lines.get(i);
             line.draw(getX(), getY() + i * 12, getContentWidth());

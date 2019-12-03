@@ -9,8 +9,11 @@ import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
 
+@SideOnly(Side.CLIENT)
 public class PanguToast implements IToast {
     @Getter
     @Setter
@@ -58,7 +61,7 @@ public class PanguToast implements IToast {
     }
 
     protected void drawText() {
-        int textStart = info.getStyle() == ToastData.Style.PRIMARY_WARNING ? 18 : 30;
+        int textStart = info.getStyle() == ToastStyle.PRIMARY_WARNING ? 18 : 30;
         if (StringUtils.isEmpty(info.getSubtitle())) {
             DefaultFontProvider.INSTANCE.drawString(info.getTitle(), textStart, 10, info.getStyle().getTitleColor(), false);
         } else {

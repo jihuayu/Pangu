@@ -5,7 +5,9 @@ import cn.mccraft.pangu.core.util.font.FontProvider;
 import cn.mccraft.pangu.core.util.render.Rect;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.client.gui.GuiScreen;
@@ -56,10 +58,14 @@ public class TextField extends Component implements Focusable {
 
     @Getter
     @Setter
+    protected TextChangeEvent textChangeEvent;
+
+    @Getter
+    @Setter
     protected boolean enableBackgroundDrawing = true;
 
 
-    public TextField(int width, int height) {
+    public TextField(float width, float height) {
         super();
         setSize(width, height);
     }
@@ -332,8 +338,10 @@ public class TextField extends Component implements Focusable {
         }
 
         if (this.validator.apply(s)) {
-            this.text = s;
-            this.moveCursorBy(i - this.selectionEnd + l);
+            if (textChangeEvent == null || textChangeEvent.onTextChange(s, this.text)) {
+                this.text = s;
+                this.moveCursorBy(i - this.selectionEnd + l);
+            }
         }
     }
 
@@ -503,5 +511,9 @@ public class TextField extends Component implements Focusable {
         }
 
         return i;
+    }
+    @FunctionalInterface
+    public interface TextChangeEvent {
+        boolean onTextChange(String newText, String oldText);
     }
 }

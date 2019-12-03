@@ -1,5 +1,6 @@
 package cn.mccraft.pangu.core.util.render;
 
+import cn.mccraft.pangu.core.util.Games;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -21,7 +22,8 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
  */
 @SideOnly(Side.CLIENT)
 public interface RenderUtils {
-    Minecraft minecraft = Minecraft.getMinecraft();
+    Minecraft minecraft = Games.minecraft();
+
     boolean[] LIGHT_TEXTURE2D_ENABLE = {false};
 
     /**
@@ -36,6 +38,17 @@ public interface RenderUtils {
      */
     static void renderItem(ItemStack item, ItemCameraTransforms.TransformType transformType) {
         minecraft.getRenderItem().renderItem(item, transformType);
+    }
+
+    /**
+     * Render Item into gui
+     */
+    static void renderItemIntoGUI(ItemStack stack, int x, int y, String altText) {
+        GlStateManager.translate(0.0F, 0.0F, 32.0F);
+        minecraft.getRenderItem().zLevel = 200.0F;
+        minecraft.getRenderItem().renderItemAndEffectIntoGUI(Games.player(), stack, x, y);
+        minecraft.getRenderItem().renderItemOverlayIntoGUI(minecraft.fontRenderer, stack, x, y, altText);
+        minecraft.getRenderItem().zLevel = 0.0F;
     }
 
     /**
@@ -207,7 +220,7 @@ public interface RenderUtils {
         glVertex3f(-x, -y, z);
         glEnd();
 
-        // Purple side - RIGHT
+        // Purple side - ENDING
         glBegin(GL_QUADS);
         color(1, 0, 1);
         glVertex3f(x, -y, -z);
@@ -216,7 +229,7 @@ public interface RenderUtils {
         glVertex3f(x, -y, z);
         glEnd();
 
-        // Green side - LEFT
+        // Green side - LEADING
         glBegin(GL_QUADS);
         color(0, 1, 0);
         glVertex3f(-x, -y, z);
@@ -254,11 +267,11 @@ public interface RenderUtils {
         return (color >> 16 & 255) / 255.0F;
     }
 
-    static float blue(int color) {
+    static float green(int color) {
         return (color >> 8 & 255) / 255.0F;
     }
 
-    static float green(int color) {
+    static float blue(int color) {
         return (color & 255) / 255.0F;
     }
 
@@ -270,11 +283,11 @@ public interface RenderUtils {
         return color >> 16 & 255;
     }
 
-    static int blueInt(int color) {
+    static int greenInt(int color) {
         return color >> 8 & 255;
     }
 
-    static int greenInt(int color) {
+    static int blueInt(int color) {
         return color & 255;
     }
 

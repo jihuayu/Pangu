@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 @Accessors(chain = true)
@@ -61,7 +62,7 @@ public abstract class Component implements Cloneable, Comparable<Component> {
     }
 
     /**
-     * Only if this component is focused ({@link Container#focus(Focusable)})
+     * Only if this component is focused ({@link Container#focus(Component)})
      */
     public void onKeyTyped(char typedChar, int keyCode) {
     }
@@ -85,19 +86,23 @@ public abstract class Component implements Cloneable, Comparable<Component> {
 
     public float getX() {
         if (parent instanceof Container) return getNativeX() + ((Container) parent).getOffsetX();
+        else if (parent instanceof TabContainer) return getNativeX() + parent.getX();
         return getNativeX();
     }
 
     public float getY() {
         if (parent instanceof Container) return getNativeY() + ((Container) parent).getOffsetY();
-        return getNativeY();
+        else if (parent instanceof TabContainer) return getNativeY() + parent.getY();
+        else return getNativeY();
     }
 
     public float getNativeX() {
+        if (screen != null && screen.centerOrigin) return screen.halfWidth + x;
         return x;
     }
 
     public float getNativeY() {
+        if (screen != null && screen.centerOrigin) return screen.halfHeight + y;
         return y;
     }
 
@@ -126,8 +131,17 @@ public abstract class Component implements Cloneable, Comparable<Component> {
      * Draw a red frame that contains this component
      */
     @SideOnly(Side.CLIENT)
+    @Deprecated
     public void drawComponentBox() {
-        Rect.drawFrameBox(x, y, width, height, 1, 0xFFFF0000);
+        drawComponentBox(0xFFFF0000);
+    }
+
+    /**
+     * Draw a frame that contains this component
+     */
+    @SideOnly(Side.CLIENT)
+    public void drawComponentBox(int color) {
+        Rect.drawFrameBox(getX(), getY(), getWidth(), getHeight(), 1, color);
     }
 
     /**
@@ -135,13 +149,22 @@ public abstract class Component implements Cloneable, Comparable<Component> {
      */
     @SideOnly(Side.CLIENT)
     public void drawToolTips(List<String> texts, int mouseX, int mouseY) {
-        GuiUtils.drawHoveringText(texts, mouseX, mouseY, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight, -1, Minecraft.getMinecraft().fontRenderer);
-        RenderHelper.disableStandardItemLighting();
+        if (getScreen() != null) {
+            getScreen().drawHovering(this, texts, mouseX, mouseY);
+        } else {
+            GuiUtils.drawHoveringText(texts, mouseX, mouseY, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight, -1, Minecraft.getMinecraft().fontRenderer);
+            RenderHelper.disableStandardItemLighting();
+        }
     }
 
     @SideOnly(Side.CLIENT)
     public void playPressSound() {
         Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
+    public Component toolTips(String... toolTips) {
+        setToolTips(Arrays.asList(toolTips));
+        return this;
     }
 
     @Override

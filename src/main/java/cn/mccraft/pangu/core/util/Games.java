@@ -11,10 +11,14 @@ public interface Games {
      * Is running with integrated server
      */
     static boolean isIntegratedServer() {
-        return Sides.isClient() && Minecraft.getMinecraft().isIntegratedServerRunning();
+        return Minecraft.getMinecraft().isIntegratedServerRunning();
     }
 
     static EntityPlayer player() {
         return Minecraft.getMinecraft().player;
+    }
+
+    static Minecraft minecraft() {
+        return Minecraft.getMinecraft();
     }
 }
